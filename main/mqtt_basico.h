@@ -67,9 +67,9 @@
 void mqtt_app_main_task(void * parm);
 void publicar_temperatura_task(void * parm);
 void bmp280_test(void *pvParameters);
-QueueHandle_t xQueue;
+QueueHandle_t xQueue; 
 
-//datos del sensor para enviar a la cola
+//estructura para almacenar los datos del sensor que se envian a la cola
 typedef struct
 {
 float temperature;

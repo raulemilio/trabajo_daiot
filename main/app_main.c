@@ -17,7 +17,10 @@ void app_main(void)
     ESP_ERROR_CHECK( nvs_flash_init() );
     
     ESP_ERROR_CHECK(i2cdev_init());
-    
+    /*
+    Cola para enviar las mediciones obtenidas del sensor (función bmp280_test)
+    a la función publicar_temperatura_task que envia por mqtt
+    */
     xQueue = xQueueCreate( 1, sizeof( Data_t ) );
 
     initialise_wifi();
@@ -30,7 +33,7 @@ void app_main(void)
 
     xTaskCreate(publicar_temperatura_task, "temp_pub_task", 4096 * 8, NULL, 3, NULL);
     
-    xTaskCreatePinnedToCore(bmp280_test, "bmp280_test", configMINIMAL_STACK_SIZE * 8, NULL, 5, NULL, APP_CPU_NUM);
+    xTaskCreatePinnedToCore(bmp280_test, "bmp280_test", configMINIMAL_STACK_SIZE * 8, NULL, 5, NULL, APP_CPU_NUM); // lectura del sensor
     
 }
 

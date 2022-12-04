@@ -215,9 +215,10 @@ static bool mqtt_client_configure(void) {
 void publicar_temperatura_task(void * parm)
 {
     ESP_LOGI(TAG, "Ingresa a publicar_temperatura_task()");
+    
     BaseType_t xStatus;
     const TickType_t xTicksToWait = pdMS_TO_TICKS( 1000 );
-    Data_t receive_dataSensor_queue;
+    Data_t receive_dataSensor_queue; // estructura que almacena los datos a enviar
     
 	char bufferJson[300];
 	char bufferTopic[350];
@@ -241,6 +242,7 @@ void publicar_temperatura_task(void * parm)
                         
         if( uxQueueMessagesWaiting( xQueue ) != 0 )
 		{
+		// verificamos si se recibieron datos en la cola desde bmp280_test
 		printf( "Queue should have been empty!\n" );
 		}  
 	   
@@ -303,7 +305,7 @@ void publicar_temperatura_task(void * parm)
 void bmp280_test(void *pvParameters)
 {
     BaseType_t xStatus;
-    Data_t send_dataSensor_queue; 
+    Data_t send_dataSensor_queue; // estructura para almacenar los datos a enviar a la cola
     
     bmp280_params_t params;
     bmp280_init_default_params(&params);
@@ -326,6 +328,7 @@ void bmp280_test(void *pvParameters)
             printf("Temperature/pressure reading failed\n");
             continue;
         }
+    //cargamos los datos de presión y temperatura a la cola
     send_dataSensor_queue.temperature=temperature;
 	send_dataSensor_queue.pressure=pressure;
 	xStatus = xQueueSendToBack( xQueue, &(send_dataSensor_queue), 300);
