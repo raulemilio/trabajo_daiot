@@ -1,0 +1,21 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/home/rome/esp/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/home/rome/esp/workspace/proyecto_daiot/build/bootloader",
+    "config_file":        "/home/rome/esp/workspace/proyecto_daiot/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.4.2-dirty",
+    "target":             "esp32c3",
+    "rev":                "",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "riscv32-esp-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/home/rome/esp/esp-idf/components/efuse/Kconfig;/home/rome/esp/esp-idf/components/esp32c3/Kconfig;/home/rome/esp/esp-idf/components/esp_common/Kconfig;/home/rome/esp/esp-idf/components/esp_hw_support/Kconfig;/home/rome/esp/esp-idf/components/esp_system/Kconfig;/home/rome/esp/esp-idf/components/freertos/Kconfig;/home/rome/esp/esp-idf/components/hal/Kconfig;/home/rome/esp/esp-idf/components/log/Kconfig;/home/rome/esp/esp-idf/components/newlib/Kconfig;/home/rome/esp/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/home/rome/esp/esp-idf/components/bootloader/Kconfig.projbuild;/home/rome/esp/esp-idf/components/esp_rom/Kconfig.projbuild;/home/rome/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/home/rome/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32c3", "esp_common", "esp_hw_support", "esp_rom", "esp_system", "esptool_py", "freertos", "hal", "log", "main", "micro-ecc", "newlib", "partition_table", "riscv", "soc", "spi_flash", "" ],
+    "build_component_paths" : [ "/home/rome/esp/esp-idf/components/bootloader", "/home/rome/esp/esp-idf/components/bootloader_support", "/home/rome/esp/esp-idf/components/efuse", "/home/rome/esp/esp-idf/components/esp32c3", "/home/rome/esp/esp-idf/components/esp_common", "/home/rome/esp/esp-idf/components/esp_hw_support", "/home/rome/esp/esp-idf/components/esp_rom", "/home/rome/esp/esp-idf/components/esp_system", "/home/rome/esp/esp-idf/components/esptool_py", "/home/rome/esp/esp-idf/components/freertos", "/home/rome/esp/esp-idf/components/hal", "/home/rome/esp/esp-idf/components/log", "/home/rome/esp/esp-idf/components/bootloader/subproject/main", "/home/rome/esp/esp-idf/components/bootloader/subproject/components/micro-ecc", "/home/rome/esp/esp-idf/components/newlib", "/home/rome/esp/esp-idf/components/partition_table", "/home/rome/esp/esp-idf/components/riscv", "/home/rome/esp/esp-idf/components/soc", "/home/rome/esp/esp-idf/components/spi_flash", "" ]
+}

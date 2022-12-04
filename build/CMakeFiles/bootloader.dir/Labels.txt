@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/home/rome/esp/workspace/proyecto_daiot/build/CMakeFiles/bootloader
+/home/rome/esp/workspace/proyecto_daiot/build/CMakeFiles/bootloader.rule
+/home/rome/esp/workspace/proyecto_daiot/build/CMakeFiles/bootloader-complete.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/rome/esp/workspace/proyecto_daiot/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
