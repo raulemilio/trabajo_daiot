@@ -68,5 +68,6 @@
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/spiffs/libspiffs.a
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/main/libmain.a
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/libled_strip.a
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/i2cdev/libi2cdev.a
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/bmp280/libbmp280.a

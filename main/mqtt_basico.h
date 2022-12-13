@@ -23,11 +23,13 @@
 // Dominio de GCP a utilizar con "Google's minimal root CA set (<1 KB)"
 //#define BROKER_URI				"mqtts://mqtt.2030.ltsapis.goog"
 
-#define BROKER_URI "mqtt://daiot.com.ar:8883" // daiot
+//#define BROKER_URI "mqtt://daiot.com.ar:8883" // daiot
+#define BROKER_URI "mqtt://192.168.0.171:1883" // local
+//#define BROKER_URI "mqtt://broker.emqx.io" // emqx
 
 #define IOTCORE_USERNAME		"unused"
 #define IOTCORE_PROJECTID		"daiot2022-6co"
-#define IOTCORE_DEVICE_NUMBER	"108" // Completar el ID que te corresponda segun tu nombre:
+#define IOTCORE_DEVICE_NUMBER	"1" // Completar el ID que te corresponda segun tu nombre:
 
 //101	Leopoldo Zimperz
 //102	Martin Alejandro
@@ -67,7 +69,11 @@
 void mqtt_app_main_task(void * parm);
 void publicar_temperatura_task(void * parm);
 void bmp280_test(void *pvParameters);
+void led_task(void *pvParameters);
+
 QueueHandle_t xQueue; 
+QueueHandle_t xQueue1; 
+QueueHandle_t xQueue2; 
 
 //estructura para almacenar los datos del sensor que se envian a la cola
 typedef struct

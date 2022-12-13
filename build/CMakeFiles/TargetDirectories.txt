@@ -662,6 +662,13 @@
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/main/CMakeFiles/rebuild_cache.dir
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/main/CMakeFiles/edit_cache.dir
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/main/CMakeFiles/__idf_main.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/install/strip.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/install/local.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/install.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/list_install_components.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/rebuild_cache.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/edit_cache.dir
+/home/rome/esp/workspace/proyecto_daiot/build/esp-idf/led_strip/CMakeFiles/__idf_led_strip.dir
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/esp_idf_lib_helpers/CMakeFiles/install/strip.dir
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/esp_idf_lib_helpers/CMakeFiles/install/local.dir
 /home/rome/esp/workspace/proyecto_daiot/build/esp-idf/esp_idf_lib_helpers/CMakeFiles/install.dir

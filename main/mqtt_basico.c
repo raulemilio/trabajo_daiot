@@ -43,15 +43,21 @@
 
 #include <bmp280.h>
 
-//agregado
+#include "driver/gpio.h"
+#include "led_strip.h"
+
+/***BMP280****************************************************************************/
 #define CONFIG_EXAMPLE_I2C_MASTER_SDA 4
 #define CONFIG_EXAMPLE_I2C_MASTER_SCL 5
-//agregado
+/***BMP280****************************************************************************/
 
+#define BLINK_GPIO 0  // 8 led interno 0 para externo
 
 static const char *TAG = "MQTT MODULE: ";
+
 #define MOSQUITO_USER_NAME              "daiot"
 #define MOSQUITO_USER_PASSWORD          "daiot"
+//#define MOSQUITO_USER_PASSWORD          ""
 
 esp_mqtt_client_handle_t cliente = NULL;
 
@@ -86,13 +92,14 @@ uint8_t id_sensor_recibido;
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
+    BaseType_t xStatus;// agregado
     cliente = event->client;
     switch (event->event_id) {
             case MQTT_EVENT_CONNECTED:
                 ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
 
                 // Suscribirse a tema 'config' de Google Cloud IoT
-                esp_mqtt_client_subscribe(event->client, "/topic/qos1", 0);
+                esp_mqtt_client_subscribe(event->client, "/topic/dispositivos/estadoElectrovalvula", 0);
 
                 // Suscribirse a tema 'commands' de Google Cloud IoT
                 esp_mqtt_client_subscribe(event->client, "/topic/qos0", 0);
@@ -128,6 +135,27 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
                 ESP_LOGI(TAG, "MQTT_EVENT_DATA: ");
                 printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
                 printf("DATA=%.*s\r\n", event->data_len, event->data);
+                /******************************/
+                char *pcStringToSend;
+                char *estado="1";
+                pcStringToSend=(char *)event->data;
+                int electroState=0;
+                if(strncmp(pcStringToSend, estado,1)==0)
+                {
+                	electroState=1;
+                }else
+                {
+                	electroState=0;
+                }
+                xStatus = xQueueSendToBack( xQueue1, &electroState, 300);
+					if( xStatus != pdPASS )
+					{
+					/* The send operation could not complete because the queue was full -
+					this must be an error as the queue should never contain more than
+					one item! */
+					printf( "Could not send to the queue.\n" );
+					} 
+				/******************************/
                 break;
 
             case MQTT_EVENT_ERROR:
@@ -215,24 +243,27 @@ static bool mqtt_client_configure(void) {
 void publicar_temperatura_task(void * parm)
 {
     ESP_LOGI(TAG, "Ingresa a publicar_temperatura_task()");
-    
+
     BaseType_t xStatus;
     const TickType_t xTicksToWait = pdMS_TO_TICKS( 1000 );
-    Data_t receive_dataSensor_queue; // estructura que almacena los datos a enviar
     
+    Data_t receive_dataSensor_queue; // estructura que almacena los datos a enviar
+	
 	char bufferJson[300];
 	char bufferTopic[350];
 	int msg_id;
 	char buffer_temp_txt[15];
 	char buffer_press_txt[15];
 	char buffer_rssi_txt[15];
+	char buffer_electroState_txt[15];
 	
 	float temp=24;
 	float press=100000;
     int8_t rssi = 0;
+    int8_t electroState = 0; // se recibe desde la cola 
     
 	wifi_ap_record_t ap_info;
-
+	    /* Configure the peripheral according to the LED type */
 	while(1)
 	{
 	
@@ -260,7 +291,37 @@ void publicar_temperatura_task(void * parm)
 		{
 		/* Data was not received */
 		printf( "Could not receive from the queue.\n" );
+		}
+		/*******************************************************/
+		if( uxQueueMessagesWaiting( xQueue1 ) != 0 )
+		{
+		// verificamos si se recibieron datos en la cola desde bmp280_test
+		printf( "Queue should have been empty!\n" );
 		}  
+	    xStatus = xQueueReceive( xQueue1, &electroState, xTicksToWait );
+	 	
+	 	if( xStatus == pdPASS )
+		{
+		/* Data was successfully received from the queue, print out the received value. */
+		printf( "Activar electroválvula=%i\r\n",electroState);
+		
+		xStatus = xQueueSendToBack( xQueue2, &(electroState), 300);
+		if( xStatus != pdPASS )
+		{
+		/* The send operation could not complete because the queue was full -
+		this must be an error as the queue should never contain more than
+		one item! */
+		printf( "Could not send to the queue.\n" );
+		} 
+
+		}
+		else
+		{
+		/* Data was not received */
+		printf( "Could not receive from the queue.\n" );
+		}  
+		/*******************************************************/
+		  
 		        
             // Consulto al modulo el nivel de señal que esta recibiendo.
             esp_wifi_sta_get_ap_info(&ap_info);
@@ -271,7 +332,8 @@ void publicar_temperatura_task(void * parm)
             snprintf(buffer_temp_txt, sizeof(buffer_temp_txt), "%.2f", temp);
             snprintf(buffer_press_txt, sizeof(buffer_press_txt), "%.2f", press);
             snprintf(buffer_rssi_txt, sizeof(buffer_rssi_txt), "%d", rssi);
-            ESP_LOGI("Datos a enviar: ", "T %s - Pa %s - RSSI %s", buffer_temp_txt, buffer_press_txt, buffer_rssi_txt);
+            snprintf(buffer_electroState_txt, sizeof(buffer_electroState_txt), "%d", electroState);
+            ESP_LOGI("Datos a enviar: ", "T %s - Pa %s - RSSI %s - electroEstate %s ", buffer_temp_txt, buffer_press_txt, buffer_rssi_txt, buffer_electroState_txt);
           
                 bufferJson[0] = 0;
 
@@ -283,19 +345,21 @@ void publicar_temperatura_task(void * parm)
                 strcat(bufferJson, buffer_press_txt);
                 strcat(bufferJson, ", \"rssi\": ");
                 strcat(bufferJson, buffer_rssi_txt);
+                strcat(bufferJson, ", \"electroState\": ");
+                strcat(bufferJson, buffer_electroState_txt);
                 strcat(bufferJson, " }");
 
                 ESP_LOGI("JSON enviado:", " %s ", bufferJson);
 
                 bufferTopic[0] = 0;
-                strcat(bufferTopic, "/topic/qos1");
-                strcat(bufferTopic, IOTCORE_DEVICEID);
-                strcat(bufferTopic, "/topic/qos2");
-
+                //strcat(bufferTopic, "/topic/qos1");
+                //strcat(bufferTopic, IOTCORE_DEVICEID);
+                strcat(bufferTopic, "/topic/dispositivos");
+                ESP_LOGI("JSON enviado:", " %s ", bufferTopic);
                 msg_id = esp_mqtt_client_publish(cliente, bufferTopic, bufferJson, 0, 1, 0);
-
+                
                 ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
-            // FIN CICLO LECTURA Y ENVIO
+            // FIN CICLO LECTURA Y ENVIO    
         }
         vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
@@ -306,7 +370,7 @@ void bmp280_test(void *pvParameters)
 {
     BaseType_t xStatus;
     Data_t send_dataSensor_queue; // estructura para almacenar los datos a enviar a la cola
-    
+
     bmp280_params_t params;
     bmp280_init_default_params(&params);
     bmp280_t dev;
@@ -328,23 +392,57 @@ void bmp280_test(void *pvParameters)
             printf("Temperature/pressure reading failed\n");
             continue;
         }
-    //cargamos los datos de presión y temperatura a la cola
-    send_dataSensor_queue.temperature=temperature;
-	send_dataSensor_queue.pressure=pressure;
-	xStatus = xQueueSendToBack( xQueue, &(send_dataSensor_queue), 300);
-	if( xStatus != pdPASS )
-	{
-	/* The send operation could not complete because the queue was full -
-	this must be an error as the queue should never contain more than
-	one item! */
-	printf( "Could not send to the queue.\n" );
-	} 
+    	//cargamos los datos de presión y temperatura a la cola
+   	 	send_dataSensor_queue.temperature=temperature;
+		send_dataSensor_queue.pressure=pressure;
+		xStatus = xQueueSendToBack( xQueue, &(send_dataSensor_queue), 300);
+		if( xStatus != pdPASS )
+		{
+		/* The send operation could not complete because the queue was full -
+		this must be an error as the queue should never contain more than
+		one item! */
+		printf( "Could not send to the queue.\n" );
+		} 
 	
-        printf("Lectura del sensor-> Pressure: %.2f Pa, Temperature: %.2f C", pressure, temperature);
-        if (bme280p)
-            printf(", Humidity: %.2f\n", humidity);
-        else
-            printf("\n");
+   		printf("Lectura del sensor-> Pressure: %.2f Pa, Temperature: %.2f C", pressure, temperature);
+    	if (bme280p)
+        printf(", Humidity: %.2f\n", humidity);
+    	else
+    	printf("\n");
+    }
+}
+
+void led_task(void *pvParameters)
+{
+    BaseType_t xStatus;
+    static uint8_t s_led_state = 0;
+    const TickType_t xTicksToWait = pdMS_TO_TICKS( 1000 );
+    gpio_reset_pin(BLINK_GPIO);
+    /* Set the GPIO as a push/pull output */
+    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+
+    while (1) {
+    /* Set the GPIO level according to the state (LOW or HIGH)*/
+     if( uxQueueMessagesWaiting( xQueue2 ) != 0 )
+		{
+		// verificamos si se recibieron datos en la cola desde bmp280_test
+		printf( "Queue should have been empty!\n" );
+		}  
+	   
+	    xStatus = xQueueReceive( xQueue2, &s_led_state, xTicksToWait );
+	 	
+	 	if( xStatus == pdPASS )
+		{
+		/* Data was successfully received from the queue, print out the received value. */
+
+		printf("\n");
+		}
+		else
+		{
+		/* Data was not received */
+		printf( "Could not receive from the queue.\n" );
+		}
+		    gpio_set_level(BLINK_GPIO, s_led_state);
     }
 }
 
