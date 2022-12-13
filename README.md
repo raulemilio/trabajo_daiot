@@ -10,14 +10,14 @@ Pasos:
 
 - Habilitar la herramienta:
 
-	- cd /esp/esp-idf/
-	- . ./export.sh
-	- cd  /carpeta del proyecto
+`cd /esp/esp-idf/`
+`. ./export.sh`
+`cd  /carpeta del proyecto`
 
 - Seleccionar el dispositivo:
 
-	- idf.py set-target esp32c3
-	- idf.py flash monitor
+`idf.py set-target esp32c3`
+`idf.py flash monitor`
 
 ### Tópicos mqtt
 
